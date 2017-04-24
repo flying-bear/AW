@@ -1,7 +1,18 @@
+## Я хочу, чтоб каждый пример был преобразован в 1 строку таблицы SCV.
+## Строка (по клетке):
+##    Левый контекст;
+##    выделенные слова из левого контеста;
+##    "ни шиша" - лучше бы, чтобы case-sensitive, но я не могу это умно сделать;
+##    правый контекст без ссылки;
+##    выделенные слова из правого контекста; 
+##    источник - внутри квадратных скобок;
+##    дата - внутри круглых скобок внутри квадратных;
+## Если в строке нет сочетания "ни шиша", то вся строка превращается в первую клетку.
 
 
 import csv
 import re
+
 
 def open_text(fname):
     phrases = []
@@ -31,9 +42,10 @@ def find_examples(text):
             ex = re.sub('(Н|н)и(?:\n|.)*?шиша', n_case+'и шиша', ex)
         else:
             lines_list = re.findall('RU\'>((?:.|\n)*?)<', ex)
-            non_ex_list = []
+            non_n_list = []
             for match in lines_list:
-                print(match)
+                examples.append(match)
+            ## Тут надо написать чтобы он добавлял в примеры строки без ни шиша
         n = re.search('(?:Н|н)и шиша', ex)
         if n:
             n = n.group(0)
@@ -57,6 +69,11 @@ def find_examples(text):
             for match in rcontext:
                 match_list.append(match)
             rcontext = ' '.join(match_list)
+##            if link:
+##                re.sub(link.group(), '', rcontext) if error
+####            Убрать ссылки из примера - []
+            else:
+                pass
         else:
             rcontext = ''
         lcontext_highlight = re.search('<i(?:.|\n)*?RU\'>((?:.|\n)*?)<(?:.|\n)*?<\/i>', raw_lcontext)
@@ -70,6 +87,7 @@ def find_examples(text):
         else:
             rcontext_highlight = ''
         examples.append([lcontext, lcontext_highlight, n, rcontext, rcontext_highlight, source, date])
+##        сделать все элементы одноэлементными массивами, втч lcontext, rcontext, он почему-то печатает их в кавычках
     return examples
 
 
